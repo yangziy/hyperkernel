@@ -104,6 +104,66 @@ A few quick pointers:
 - declarative specification: `hv6/spec/kernel/spec/top.py`
 - kernel configuration: `kernel/config.h`
 
+## Detailed directory structure (Added by Zion 11/16/2021)
+Feel free to modify or add details.
+
+```
+├── Makefile
+├── README.md                               
+├── boot                                    Bootloader?
+├── drivers                                 QEMU driver?
+├── hv6                                     
+│   ├── Makefrag                            
+│   ├── arch                                ?
+│   ├── spec
+│   │   ├── base.py                         ?
+│   │   ├── kernel                          Specifications of the hv6 kernel
+│   │   │   ├── datatypes.py               
+│   │   │   ├── main.py                     unittest Runner
+│   │   │   ├── spec                        
+│   │   │   │   ├── __init__.py
+│   │   │   │   └── equiv.py                Equivalence relation between the state-transition specification and the LLVM-IR-Z3 (defined below).
+│   │   │   │   ├── helpers.py              ?
+│   │   │   │   ├── invariants.py           ?
+│   │   │   │   ├── specs.py                State-transition specification
+│   │   │   │   └── top.py                  Declarative specification
+│   │   │   └── syscall_spec.py
+│   │   └── user                            
+│   │       ├── datatypes.py
+│   │       ├── main.py
+│   │       └── spec.py                     State-transition specification
+|   |
+│   ├── user                                C source of the user space applications
+|   └── ...                                 C source of the kernel
+├── include
+│   └── uapi                                Something about QEMU hardware?
+├── irpy
+│   ├── Makefrag
+│   ├── compiler                            LLVM-IR to Z3 description compiler. We call the output LLVM-IR-Z3. It's Z3 data structure embedded in Python.
+│   ├── libirpy                             
+|   |   ├── ctx.py                          Export a high-level Python interface for the manipulation of LLVM-IR-Z3
+|   |   ├── datatypes.py                    Types used in the state-transition specification
+|   |   ├── itypes.py                       Types used in the LLVM-IR-Z3
+|   |   ├── server.py                       Proxy of the main Z3 solver process
+|   |       solver_utils.py 
+|   |       solver.py 
+|   |   ├── util.py 
+|   |   ├── z3eval.py                       (?) Evaluator of the LLVM-IR-Z3?
+|   |   └── eval.py                         Base class of the file above
+│   ├── test                                
+│   └── o.test                              
+├── kernel                                  (?) Unverified hardware specific part of the kernel
+├── lib                                     Standard C library
+├── o.x86_64                                
+│   ├── hv6                                 Built directory of the Hyperkernel OS. 
+        └── hv6py/kernel/impl.py            LLVM-IR-Z3 of the verified part of the kernel.
+│   └── irpy                                Built directory of irpy/libirpy/compiler. 
+│       └── compiler                        
+├── scripts                                 (?) At what cases will those scripts be useful?
+├── user                                    (?)
+└── web                                     Files associated with the web server
+```
+
 ## License
 
 Code borrowed from other sources keeps the original copyright and license.
