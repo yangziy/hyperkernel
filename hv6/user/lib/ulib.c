@@ -793,3 +793,9 @@ void microdelay(uint64_t delay)
     while (sys_now() - start < delay)
         pause();
 }
+
+int next_uuid(){
+    int out __aligned(PAGE_SIZE);
+    sys_debug_uuid(virt_to_phys(&out));
+    return out;
+}

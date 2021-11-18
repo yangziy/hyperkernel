@@ -52,6 +52,21 @@ static int sys_debug_dmesg(physaddr_t addr, size_t len, off_t offset)
     return syslog_read(pa2kva(addr), len, offset);
 }
 
+int __zion_uuid_counter__ = 0;
+
+/*
+Write a new universal unique identifier (UUID) to the output address passed in.
+
+This is a debug function (that means this function can not be verified) 
+because it involves pointer, which is hard to reason about.
+*/
+int sys_debug_uuid(physaddr_t out) {
+    // Should check the validity of the pointer "out" here before using it.
+    *(int*)out = ++__zion_uuid_counter__; // might overflow but I don't car
+
+    return 0;
+}
+
 void *syscalls[NR_syscalls] = {
         [0 ... NR_syscalls - 1] = sys_nop,
         [SYS_map_pml4] = sys_map_pml4,
@@ -108,4 +123,5 @@ void *syscalls[NR_syscalls] = {
         [SYS_debug_print_screen] = sys_debug_print_screen,
         [SYS_debug_dmesg] = sys_debug_dmesg,
         [SYS_debug_sysctl] = sys_debug_sysctl,
+        [SYS_debug_uuid] = sys_debug_uuid,
 };

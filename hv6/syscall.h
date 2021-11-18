@@ -58,3 +58,4 @@
 #define SYS_debug_print_screen 125
 #define SYS_debug_dmesg 126
 #define SYS_debug_sysctl 127
+#define SYS_debug_uuid 128

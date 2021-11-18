@@ -234,3 +234,5 @@ const char *strerror(int err);
 /* for lwip */
 uint32_t sys_now(void);
 void microdelay(uint64_t delay);
+
+int next_uuid();
