@@ -7,6 +7,8 @@
 
 int main(int argc, char *argv[])
 {
+    // sys_seccomp(); // This prevents next_uuid() from increasing
+
     printf(1, "%d\n", next_uuid());
     exit(); // calling exit() because echo.c does so
 }

@@ -132,6 +132,7 @@ struct proc {
         pid_t prev;
         pid_t next;
     } ready;      /* ready queue for runnable/running processes */
+    bool seccomp_enabled;
 };
 
 enum file_type {

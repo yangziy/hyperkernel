@@ -61,9 +61,21 @@ This is a debug function (that means this function can not be verified)
 because it involves pointer, which is hard to reason about.
 */
 int sys_debug_uuid(physaddr_t out) {
-    // Should check the validity of the pointer "out" here before using it.
-    *(int*)out = ++__zion_uuid_counter__; // might overflow but I don't car
+    struct proc* proc = get_proc(current);
 
+    if (! (proc->seccomp_enabled)) {
+        __zion_uuid_counter__++;  // might overflow but I don't care
+    }
+
+    // Should check the validity of the pointer "out" here before using it.
+    *(int*)out = __zion_uuid_counter__;
+
+    return 0;
+}
+
+int sys_seccomp(){
+    struct proc* proc = get_proc(current);
+    proc->seccomp_enabled = 1;
     return 0;
 }
 
@@ -124,4 +136,5 @@ void *syscalls[NR_syscalls] = {
         [SYS_debug_dmesg] = sys_debug_dmesg,
         [SYS_debug_sysctl] = sys_debug_sysctl,
         [SYS_debug_uuid] = sys_debug_uuid,
+        [SYS_seccomp] = sys_seccomp
 };

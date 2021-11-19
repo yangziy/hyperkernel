@@ -59,3 +59,4 @@
 #define SYS_debug_dmesg 126
 #define SYS_debug_sysctl 127
 #define SYS_debug_uuid 128
+#define SYS_seccomp 129

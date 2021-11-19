@@ -46,6 +46,7 @@ int alloc_proc(pid_t pid, pn_t page_table_root, pn_t stack, pn_t hvm)
     bzero(proc, sizeof(*proc));
     proc->ppid = current;
     proc->state = PROC_EMBRYO;
+    proc->seccomp_enabled = 0;
 
     alloc_page(pid, PAGE_TYPE_X86_PML4, page_table_root);
     proc->page_table_root = page_table_root;
@@ -58,6 +59,8 @@ int alloc_proc(pid_t pid, pn_t page_table_root, pn_t stack, pn_t hvm)
 
     parent = get_proc(current);
     ++parent->nr_children;
+
+
 
     return 0;
 }

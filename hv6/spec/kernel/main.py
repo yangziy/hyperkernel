@@ -42,56 +42,57 @@ Solver = solver.Solver
 
 
 _syscalls = [
-    "sys_map_pml4",
-    "sys_map_page_desc",
-    "sys_map_proc",
-    "sys_map_dev",
-    "sys_map_file",
-    "sys_alloc_pdpt",
-    "sys_alloc_pd",
-    "sys_alloc_pt",
-    "sys_alloc_frame",
-    "sys_copy_frame",
-    "sys_protect_frame",
-    "sys_free_pdpt",
-    "sys_free_pd",
-    "sys_free_pt",
-    "sys_free_frame",
-    "sys_reclaim_page",
-    "clone_proc", # sys_clone
-    "sys_set_proc_name",
-    "sys_set_runnable",
-    "switch_proc", # sys_switch
-    "sys_kill",
-    "sys_reap",
-    "sys_reparent",
-    "send_proc", # sys_send
-    "recv_proc", # sys_recv
-    "reply_wait_proc", # sys_reply_wait
-    "call_proc", # sys_call
-    "sys_create",
-    "sys_close",
-    "sys_dup",
-    "sys_dup2",
-    "sys_lseek",
-    "sys_map_pcipage",
-    "sys_alloc_iommu_root",
-    "sys_alloc_iommu_pdpt",
-    "sys_alloc_iommu_pd",
-    "sys_alloc_iommu_pt",
-    "sys_alloc_iommu_frame",
-    "sys_map_iommu_frame",
-    "sys_reclaim_iommu_frame",
-    "sys_reclaim_iommu_root",
-    "sys_alloc_vector",
-    "sys_reclaim_vector",
-    "sys_alloc_intremap",
-    "sys_reclaim_intremap",
-    "sys_ack_intr",
-    "sys_alloc_io_bitmap",
-    "sys_alloc_port",
-    "sys_reclaim_port",
-    "extintr",
+    # "sys_map_pml4",
+    # "sys_map_page_desc",
+    # "sys_map_proc",
+    # "sys_map_dev",
+    # "sys_map_file",
+    # "sys_alloc_pdpt",
+    # "sys_alloc_pd",
+    # "sys_alloc_pt",
+    # "sys_alloc_frame",
+    # "sys_copy_frame",
+    # "sys_protect_frame",
+    # "sys_free_pdpt",
+    # "sys_free_pd",
+    # "sys_free_pt",
+    # "sys_free_frame",
+    # "sys_reclaim_page",
+    # "clone_proc", # sys_clone
+    # "sys_set_proc_name",
+    # "sys_set_runnable",
+    # "switch_proc", # sys_switch
+    # "sys_kill",
+    # "sys_reap",
+    # "sys_reparent",
+    # "send_proc", # sys_send
+    # "recv_proc", # sys_recv
+    # "reply_wait_proc", # sys_reply_wait
+    # "call_proc", # sys_call
+    # "sys_create",
+    # "sys_close",
+    # "sys_dup",
+    # "sys_dup2",
+    # "sys_lseek",
+    # "sys_map_pcipage",
+    # "sys_alloc_iommu_root",
+    # "sys_alloc_iommu_pdpt",
+    # "sys_alloc_iommu_pd",
+    # "sys_alloc_iommu_pt",
+    # "sys_alloc_iommu_frame",
+    # "sys_map_iommu_frame",
+    # "sys_reclaim_iommu_frame",
+    # "sys_reclaim_iommu_root",
+    # "sys_alloc_vector",
+    # "sys_reclaim_vector",
+    # "sys_alloc_intremap",
+    # "sys_reclaim_intremap",
+    # "sys_ack_intr",
+    # "sys_alloc_io_bitmap",
+    # "sys_alloc_port",
+    # "sys_reclaim_port",
+    # "extintr",
+    "sys_seccomp"
 ]
 
 
@@ -518,21 +519,21 @@ class HV6(HV6Base):
         if isinstance(self.solver, solver.Solver):
             del self.solver
 
-    def test_preempt(self):
-        with self.assertRaises(util.NoReturn):
-            self.ctx.call('@preempt')
-        pid = util.FreshBitVec('pid', dt.pid_t)
-        newstate = spec.switch_proc(self.state, pid)[1]
-        self._prove(z3.Exists([pid], spec.state_equiv(self.ctx, newstate)))
+    # def test_preempt(self):
+    #     with self.assertRaises(util.NoReturn):
+    #         self.ctx.call('@preempt')
+    #     pid = util.FreshBitVec('pid', dt.pid_t)
+    #     newstate = spec.switch_proc(self.state, pid)[1]
+    #     self._prove(z3.Exists([pid], spec.state_equiv(self.ctx, newstate)))
 
-    def test_fault(self):
-        with self.assertRaises(util.NoReturn):
-            self.ctx.call('@fault')
-        pid = util.FreshBitVec('pid', dt.pid_t)
-        s = self.state.copy()
-        s.procs[s.current].killed = z3.BoolVal(True)
-        newstate = spec.switch_proc(s, pid)[1]
-        self._prove(z3.Exists([pid], spec.state_equiv(self.ctx, newstate)))
+    # def test_fault(self):
+    #     with self.assertRaises(util.NoReturn):
+    #         self.ctx.call('@fault')
+    #     pid = util.FreshBitVec('pid', dt.pid_t)
+    #     s = self.state.copy()
+    #     s.procs[s.current].killed = z3.BoolVal(True)
+    #     newstate = spec.switch_proc(s, pid)[1]
+    #     self._prove(z3.Exists([pid], spec.state_equiv(self.ctx, newstate)))
 
     def _syscall_generic(self, name):
         args = syscall_spec.get_syscall_args(name)
@@ -549,122 +550,122 @@ class HV6(HV6Base):
     syscalls_generic = _syscalls
 
 
-# Test cases to check if python and c versions of implementation invariants match
-class HV6ImplInvs(HV6Base):
-    def setUp(self):
-        self.solver = Solver()
-        self.solver.set(AUTO_CONFIG=False)
-        self.ctx = newctx()
+# # Test cases to check if python and c versions of implementation invariants match
+# class HV6ImplInvs(HV6Base):
+#     def setUp(self):
+#         self.solver = Solver()
+#         self.solver.set(AUTO_CONFIG=False)
+#         self.ctx = newctx()
 
-    def test_inv_py_imply_c(self):
-        self._prove(z3.Implies(spec.impl_invariants_py(
-            self.ctx), spec.impl_invariants_c(self.ctx)))
+#     def test_inv_py_imply_c(self):
+#         self._prove(z3.Implies(spec.impl_invariants_py(
+#             self.ctx), spec.impl_invariants_c(self.ctx)))
 
-    def test_inv_c_imply_py(self):
-        self._prove(z3.Implies(spec.impl_invariants_c(
-            self.ctx), spec.impl_invariants_py(self.ctx)))
-
-
-class HV6SpecMeta(HV6Meta):
-    @classmethod
-    def _add_funcs(cls, name, parents, dct):
-        syscalls = dct.get('syscalls_generic', [])
-        lemmas = dct.get('lemmas', [])
-        corollaries = dct.get('corollaries', [])
-
-        for lemma in lemmas:
-            for syscall in syscalls:
-                dct['test_{}_{}'.format(syscall, lemma)] = lambda self, syscall=syscall, lemma=lemma: \
-                    self._check_invariant(syscall, lemma)
-                dct['test_{}_initial'.format(lemma)] = lambda self, lemma=lemma: self._check_initial(lemma)
-
-        for pre, post in corollaries:
-                dct['test_{}_implies_{}'.format(pre, post)] = lambda self, pre=pre, post=post: \
-                        self._check_corollary(pre, post)
+#     def test_inv_c_imply_py(self):
+#         self._prove(z3.Implies(spec.impl_invariants_c(
+#             self.ctx), spec.impl_invariants_py(self.ctx)))
 
 
-class HV6TopLemmas(HV6Base):
-    __metaclass__ = HV6SpecMeta
+# class HV6SpecMeta(HV6Meta):
+#     @classmethod
+#     def _add_funcs(cls, name, parents, dct):
+#         syscalls = dct.get('syscalls_generic', [])
+#         lemmas = dct.get('lemmas', [])
+#         corollaries = dct.get('corollaries', [])
 
-    def setUp(self):
-        self.solver = Solver()
-        self.solver.set(AUTO_CONFIG=False)
-        self.solver.set(MODEL=MODEL_HI)
+#         for lemma in lemmas:
+#             for syscall in syscalls:
+#                 dct['test_{}_{}'.format(syscall, lemma)] = lambda self, syscall=syscall, lemma=lemma: \
+#                     self._check_invariant(syscall, lemma)
+#                 dct['test_{}_initial'.format(lemma)] = lambda self, lemma=lemma: self._check_initial(lemma)
 
-        self.state = dt.KernelState()
+#         for pre, post in corollaries:
+#                 dct['test_{}_implies_{}'.format(pre, post)] = lambda self, pre=pre, post=post: \
+#                         self._check_corollary(pre, post)
 
-    def tearDown(self):
-        # make sure the solver and solver process are killed
-        # For some reason python is keeping them around for a long time
-        # eating up a bunch of ram.
-        if isinstance(self.solver, solver.Solver):
-            del self.solver
 
-    def _check_invariant(self, syscall, lemma):
-        inv = getattr(spec, 'spec_lemma_{}'.format(lemma))
-        args = syscall_spec.get_syscall_args(syscall)
+# class HV6TopLemmas(HV6Base):
+#     __metaclass__ = HV6SpecMeta
 
-        kwargs = {}
+#     def setUp(self):
+#         self.solver = Solver()
+#         self.solver.set(AUTO_CONFIG=False)
+#         self.solver.set(MODEL=MODEL_HI)
 
-        if 'syscall' in inspect.getargspec(inv)[0]:
-            kwargs['syscall'] = syscall
-        if 'oldstate' in inspect.getargspec(inv)[0]:
-            kwargs['oldstate'] = self.state
+#         self.state = dt.KernelState()
 
-        pre = z3.And(spec.spec_invariants(self.state), inv(self.state, **kwargs))
+#     def tearDown(self):
+#         # make sure the solver and solver process are killed
+#         # For some reason python is keeping them around for a long time
+#         # eating up a bunch of ram.
+#         if isinstance(self.solver, solver.Solver):
+#             del self.solver
 
-        self.solver.add(pre)
-        cond, newstate = getattr(spec, syscall)(self.state, *args)
-        model = self._prove(z3.And(spec.spec_invariants(newstate), inv(newstate, **kwargs)),
-                            pre=pre, return_model=INTERACTIVE, minimize=MODEL_HI)
+#     def _check_invariant(self, syscall, lemma):
+#         inv = getattr(spec, 'spec_lemma_{}'.format(lemma))
+#         args = syscall_spec.get_syscall_args(syscall)
 
-        if INTERACTIVE and model:
-            from ipdb import set_trace
-            set_trace()
+#         kwargs = {}
 
-    def _check_corollary(self, pre, post):
-        pre = getattr(spec, 'spec_lemma_{}'.format(pre))
-        post = getattr(spec, 'spec_corollary_{}'.format(post))
+#         if 'syscall' in inspect.getargspec(inv)[0]:
+#             kwargs['syscall'] = syscall
+#         if 'oldstate' in inspect.getargspec(inv)[0]:
+#             kwargs['oldstate'] = self.state
 
-        self._prove(z3.Implies(z3.And(pre(self.state), spec.spec_invariants(self.state)),
-                               post(self.state)))
+#         pre = z3.And(spec.spec_invariants(self.state), inv(self.state, **kwargs))
 
-        self.setUp()
+#         self.solver.add(pre)
+#         cond, newstate = getattr(spec, syscall)(self.state, *args)
+#         model = self._prove(z3.And(spec.spec_invariants(newstate), inv(newstate, **kwargs)),
+#                             pre=pre, return_model=INTERACTIVE, minimize=MODEL_HI)
 
-        self.state = self.state.initial()
-        constraints = z3.And(spec.spec_invariants(self.state), post(self.state))
-        self.solver.add(constraints)
-        self.assertEquals(self.solver.check(), z3.sat)
+#         if INTERACTIVE and model:
+#             from ipdb import set_trace
+#             set_trace()
 
-    def _check_initial(self, lemma):
-        self.state = self.state.initial()
-        inv = getattr(spec, 'spec_lemma_{}'.format(lemma))
-        constraints = z3.And(spec.spec_invariants(self.state), inv(self.state))
-        self.solver.add(constraints)
-        self.assertEquals(self.solver.check(), z3.sat)
+#     def _check_corollary(self, pre, post):
+#         pre = getattr(spec, 'spec_lemma_{}'.format(pre))
+#         post = getattr(spec, 'spec_corollary_{}'.format(post))
 
-    syscalls_generic = _syscalls
+#         self._prove(z3.Implies(z3.And(pre(self.state), spec.spec_invariants(self.state)),
+#                                post(self.state)))
 
-    lemmas = [
-        "isolation",
-        "iommu_isolation",
-        "nr_children_refcnt",
-        "nr_fds_refcnt",
-        # "nr_pages_refcnt",  ## This one is included in both isolation proofs
-        "nr_dmapages_refcnt",
-        # "nr_devs_refcnt",  ## This one is included in iommu_isolation
-        "nr_ports_refcnt",
-        "nr_vectors",
-        "nr_intremaps",
-        "files_refcnt",
-        "tlb_ok",
-        "iommu_tlb_ok",
-    ]
+#         self.setUp()
 
-    corollaries = [
-        ("isolation", "pgwalk"),
-        ("iommu_isolation", "iommu_pgwalk"),
-    ]
+#         self.state = self.state.initial()
+#         constraints = z3.And(spec.spec_invariants(self.state), post(self.state))
+#         self.solver.add(constraints)
+#         self.assertEquals(self.solver.check(), z3.sat)
+
+#     def _check_initial(self, lemma):
+#         self.state = self.state.initial()
+#         inv = getattr(spec, 'spec_lemma_{}'.format(lemma))
+#         constraints = z3.And(spec.spec_invariants(self.state), inv(self.state))
+#         self.solver.add(constraints)
+#         self.assertEquals(self.solver.check(), z3.sat)
+
+#     syscalls_generic = _syscalls
+
+#     lemmas = [
+#         "isolation",
+#         "iommu_isolation",
+#         "nr_children_refcnt",
+#         "nr_fds_refcnt",
+#         # "nr_pages_refcnt",  ## This one is included in both isolation proofs
+#         "nr_dmapages_refcnt",
+#         # "nr_devs_refcnt",  ## This one is included in iommu_isolation
+#         "nr_ports_refcnt",
+#         "nr_vectors",
+#         "nr_intremaps",
+#         "files_refcnt",
+#         "tlb_ok",
+#         "iommu_tlb_ok",
+#     ]
+
+#     corollaries = [
+#         ("isolation", "pgwalk"),
+#         ("iommu_isolation", "iommu_pgwalk"),
+#     ]
 
 
 if __name__ == "__main__":
@@ -687,4 +688,4 @@ if __name__ == "__main__":
 
     print "Using z3 v" + '.'.join(map(str, z3.get_version()))
 
-    unittest.main()
+    unittest.main(verbosity=2)

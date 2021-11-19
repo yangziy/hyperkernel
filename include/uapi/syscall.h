@@ -1,3 +1,3 @@
 #pragma once
 
-#define NR_syscalls 129
+#define NR_syscalls 130

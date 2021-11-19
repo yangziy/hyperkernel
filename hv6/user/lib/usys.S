@@ -64,6 +64,7 @@ SYSCALL(debug_print_screen)
 SYSCALL(debug_dmesg)
 SYSCALL(debug_sysctl)
 SYSCALL(debug_uuid)
+SYSCALL(seccomp)
 
 .global	exec
 exec:

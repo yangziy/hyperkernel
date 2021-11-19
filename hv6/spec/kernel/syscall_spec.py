@@ -302,6 +302,9 @@ class SyscallSpec(object):
     def extintr(self):
         vector = util.FreshBitVec('vector', dt.uint8_t)
         return (vector,)
+    
+    def sys_seccomp(self):
+        return ()
 
     # sys_mmap
     # sys_munmap

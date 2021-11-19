@@ -73,7 +73,8 @@ HV6_UPROGS :=                       \
         $(O)/hv6/user/wc            \
         $(O)/hv6/user/wttr          \
         $(O)/hv6/user/vncd          \
-        $(O)/hv6/user/create_uuid          
+        $(O)/hv6/user/create_uuid   \
+        $(O)/hv6/user/create_uuid_seccomp
 
 HV6_LINUX_UPROGS :=                 \
         hv6/user/linux/bench_linux  \

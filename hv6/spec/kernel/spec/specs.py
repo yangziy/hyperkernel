@@ -1438,3 +1438,7 @@ def extintr(old, vector):
     new2.procs[pid].ipc_size = z3.BitVecVal(0, dt.size_t)
 
     return cond, util.If(cond, util.If(cond2, new2, new), old)
+
+def sys_seccomp(old):
+    new = old.copy()
+    return z3.BoolVal(True), new 
