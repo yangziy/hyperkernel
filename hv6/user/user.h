@@ -6,6 +6,7 @@
 #include <uapi/machine/trap.h>
 #include <uapi/errno.h>
 #include <uapi/sysctl.h>
+#include <linux.h>
 #include "fcntl.h"
 #include "memlayout.h"
 #include "readline.h"
@@ -236,3 +237,5 @@ uint32_t sys_now(void);
 void microdelay(uint64_t delay);
 
 int next_uuid();
+
+int mprotect(void *addr, size_t len, int prot);

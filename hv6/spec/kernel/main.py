@@ -556,116 +556,116 @@ class HV6(HV6Base):
 #         self.solver = Solver()
 #         self.solver.set(AUTO_CONFIG=False)
 #         self.ctx = newctx()
-
+#
 #     def test_inv_py_imply_c(self):
 #         self._prove(z3.Implies(spec.impl_invariants_py(
 #             self.ctx), spec.impl_invariants_c(self.ctx)))
-
+#
 #     def test_inv_c_imply_py(self):
 #         self._prove(z3.Implies(spec.impl_invariants_c(
 #             self.ctx), spec.impl_invariants_py(self.ctx)))
 
 
-# class HV6SpecMeta(HV6Meta):
-#     @classmethod
-#     def _add_funcs(cls, name, parents, dct):
-#         syscalls = dct.get('syscalls_generic', [])
-#         lemmas = dct.get('lemmas', [])
-#         corollaries = dct.get('corollaries', [])
+class HV6SpecMeta(HV6Meta):
+    @classmethod
+    def _add_funcs(cls, name, parents, dct):
+        syscalls = dct.get('syscalls_generic', [])
+        lemmas = dct.get('lemmas', [])
+        corollaries = dct.get('corollaries', [])
 
-#         for lemma in lemmas:
-#             for syscall in syscalls:
-#                 dct['test_{}_{}'.format(syscall, lemma)] = lambda self, syscall=syscall, lemma=lemma: \
-#                     self._check_invariant(syscall, lemma)
-#                 dct['test_{}_initial'.format(lemma)] = lambda self, lemma=lemma: self._check_initial(lemma)
+        for lemma in lemmas:
+            for syscall in syscalls:
+                dct['test_{}_{}'.format(syscall, lemma)] = lambda self, syscall=syscall, lemma=lemma: \
+                    self._check_invariant(syscall, lemma)
+                dct['test_{}_initial'.format(lemma)] = lambda self, lemma=lemma: self._check_initial(lemma)
 
-#         for pre, post in corollaries:
-#                 dct['test_{}_implies_{}'.format(pre, post)] = lambda self, pre=pre, post=post: \
-#                         self._check_corollary(pre, post)
+        for pre, post in corollaries:
+                dct['test_{}_implies_{}'.format(pre, post)] = lambda self, pre=pre, post=post: \
+                        self._check_corollary(pre, post)
 
 
-# class HV6TopLemmas(HV6Base):
-#     __metaclass__ = HV6SpecMeta
+class HV6TopLemmas(HV6Base):
+    __metaclass__ = HV6SpecMeta
 
-#     def setUp(self):
-#         self.solver = Solver()
-#         self.solver.set(AUTO_CONFIG=False)
-#         self.solver.set(MODEL=MODEL_HI)
+    def setUp(self):
+        self.solver = Solver()
+        self.solver.set(AUTO_CONFIG=False)
+        self.solver.set(MODEL=MODEL_HI)
 
-#         self.state = dt.KernelState()
+        self.state = dt.KernelState()
 
-#     def tearDown(self):
-#         # make sure the solver and solver process are killed
-#         # For some reason python is keeping them around for a long time
-#         # eating up a bunch of ram.
-#         if isinstance(self.solver, solver.Solver):
-#             del self.solver
+    def tearDown(self):
+        # make sure the solver and solver process are killed
+        # For some reason python is keeping them around for a long time
+        # eating up a bunch of ram.
+        if isinstance(self.solver, solver.Solver):
+            del self.solver
 
-#     def _check_invariant(self, syscall, lemma):
-#         inv = getattr(spec, 'spec_lemma_{}'.format(lemma))
-#         args = syscall_spec.get_syscall_args(syscall)
+    def _check_invariant(self, syscall, lemma):
+        inv = getattr(spec, 'spec_lemma_{}'.format(lemma))
+        args = syscall_spec.get_syscall_args(syscall)
 
-#         kwargs = {}
+        kwargs = {}
 
-#         if 'syscall' in inspect.getargspec(inv)[0]:
-#             kwargs['syscall'] = syscall
-#         if 'oldstate' in inspect.getargspec(inv)[0]:
-#             kwargs['oldstate'] = self.state
+        if 'syscall' in inspect.getargspec(inv)[0]:
+            kwargs['syscall'] = syscall
+        if 'oldstate' in inspect.getargspec(inv)[0]:
+            kwargs['oldstate'] = self.state
 
-#         pre = z3.And(spec.spec_invariants(self.state), inv(self.state, **kwargs))
+        pre = z3.And(spec.spec_invariants(self.state), inv(self.state, **kwargs))
 
-#         self.solver.add(pre)
-#         cond, newstate = getattr(spec, syscall)(self.state, *args)
-#         model = self._prove(z3.And(spec.spec_invariants(newstate), inv(newstate, **kwargs)),
-#                             pre=pre, return_model=INTERACTIVE, minimize=MODEL_HI)
+        self.solver.add(pre)
+        cond, newstate = getattr(spec, syscall)(self.state, *args)
+        model = self._prove(z3.And(spec.spec_invariants(newstate), inv(newstate, **kwargs)),
+                            pre=pre, return_model=INTERACTIVE, minimize=MODEL_HI)
 
-#         if INTERACTIVE and model:
-#             from ipdb import set_trace
-#             set_trace()
+        if INTERACTIVE and model:
+            from ipdb import set_trace
+            set_trace()
 
-#     def _check_corollary(self, pre, post):
-#         pre = getattr(spec, 'spec_lemma_{}'.format(pre))
-#         post = getattr(spec, 'spec_corollary_{}'.format(post))
+    def _check_corollary(self, pre, post):
+        pre = getattr(spec, 'spec_lemma_{}'.format(pre))
+        post = getattr(spec, 'spec_corollary_{}'.format(post))
 
-#         self._prove(z3.Implies(z3.And(pre(self.state), spec.spec_invariants(self.state)),
-#                                post(self.state)))
+        self._prove(z3.Implies(z3.And(pre(self.state), spec.spec_invariants(self.state)),
+                               post(self.state)))
 
-#         self.setUp()
+        self.setUp()
 
-#         self.state = self.state.initial()
-#         constraints = z3.And(spec.spec_invariants(self.state), post(self.state))
-#         self.solver.add(constraints)
-#         self.assertEquals(self.solver.check(), z3.sat)
+        self.state = self.state.initial()
+        constraints = z3.And(spec.spec_invariants(self.state), post(self.state))
+        self.solver.add(constraints)
+        self.assertEquals(self.solver.check(), z3.sat)
 
-#     def _check_initial(self, lemma):
-#         self.state = self.state.initial()
-#         inv = getattr(spec, 'spec_lemma_{}'.format(lemma))
-#         constraints = z3.And(spec.spec_invariants(self.state), inv(self.state))
-#         self.solver.add(constraints)
-#         self.assertEquals(self.solver.check(), z3.sat)
+    def _check_initial(self, lemma):
+        self.state = self.state.initial()
+        inv = getattr(spec, 'spec_lemma_{}'.format(lemma))
+        constraints = z3.And(spec.spec_invariants(self.state), inv(self.state))
+        self.solver.add(constraints)
+        self.assertEquals(self.solver.check(), z3.sat)
 
-#     syscalls_generic = _syscalls
+    syscalls_generic = _syscalls
 
-#     lemmas = [
-#         "isolation",
-#         "iommu_isolation",
-#         "nr_children_refcnt",
-#         "nr_fds_refcnt",
-#         # "nr_pages_refcnt",  ## This one is included in both isolation proofs
-#         "nr_dmapages_refcnt",
-#         # "nr_devs_refcnt",  ## This one is included in iommu_isolation
-#         "nr_ports_refcnt",
-#         "nr_vectors",
-#         "nr_intremaps",
-#         "files_refcnt",
-#         "tlb_ok",
-#         "iommu_tlb_ok",
-#     ]
+    lemmas = [
+        "isolation",
+        # "iommu_isolation",
+        # "nr_children_refcnt",
+        # "nr_fds_refcnt",
+        # # "nr_pages_refcnt",  ## This one is included in both isolation proofs
+        # "nr_dmapages_refcnt",
+        # # "nr_devs_refcnt",  ## This one is included in iommu_isolation
+        # "nr_ports_refcnt",
+        # "nr_vectors",
+        # "nr_intremaps",
+        # "files_refcnt",
+        # "tlb_ok",
+        # "iommu_tlb_ok",
+    ]
 
-#     corollaries = [
-#         ("isolation", "pgwalk"),
-#         ("iommu_isolation", "iommu_pgwalk"),
-#     ]
+    corollaries = [
+        # ("isolation", "pgwalk"),
+        # ("iommu_isolation", "iommu_pgwalk"),
+    ]
 
 
 if __name__ == "__main__":

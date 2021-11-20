@@ -799,3 +799,22 @@ int next_uuid(){
     sys_debug_uuid(virt_to_phys(&out));
     return out;
 }
+
+int mprotect(void *addr, size_t len, int prot)
+{
+    int perm = 0;
+
+    assert((uintptr_t)addr % PAGE_SIZE == 0, "addr must be page-aligned");
+    assert(prot & PROT_READ, "must be readable");
+    assert((prot & ~(PROT_READ | PROT_WRITE)) == 0, "TBD");
+
+    if (prot & PROT_READ)
+        perm |= PTE_P;
+    if (prot & PROT_WRITE)
+        perm |= PTE_W;
+
+    protect_pages((uintptr_t)addr, len, perm);
+    return 0;
+}
+
+
